@@ -5,8 +5,16 @@
 
 cat("Installing R packages for Earth Observation Statistics...\n")
 
-# Set CRAN mirror
-options(repos = c(CRAN = "https://cloud.r-project.org"))
+# Use Posit Package Manager with binary support for much faster builds
+# Ubuntu 24.04 (Noble) binaries
+options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/noble/latest"))
+
+# Configure HTTP user agent for binary package detection
+options(HTTPUserAgent = sprintf(
+  "R/%s R (%s)",
+  getRversion(),
+  paste(getRversion(), R.version["platform"], R.version["arch"], R.version["os"])
+))
 
 # Read package list
 packages <- readLines("/tmp/requirements-r.txt")
