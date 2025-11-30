@@ -35,11 +35,7 @@ commandTests:
     command: "python"
     args: ["-c", "from osgeo import gdal; print('GDAL OK')"]
     expectedOutput: ["GDAL OK"]
-  - name: "sits package installed"
+  - name: "All UN-Handbook R packages available"
     command: "Rscript"
-    args: ["-e", "library(sits); cat('sits OK')"]
-    expectedOutput: ["sits OK"]
-  - name: "terra package installed"
-    command: "Rscript"
-    args: ["-e", "library(terra); cat('terra OK')"]
-    expectedOutput: ["terra OK"]
+    args: ["/opt/eostat/test-handbook-packages.R"]
+    exitCode: 0

@@ -1,36 +1,21 @@
-# Core geospatial packages
-sf
-terra
-stars
-raster
-rgdal
-gdalUtilities
+# NOTE: Base image (r-datascience) already includes:
+# - sf, terra, stars (from rocker's install_geospatial.sh)
+# - tidyverse, dplyr, tidyr, ggplot2, lubridate
+# - arrow, duckdb
 
-# Satellite imagery and Earth observation
+# Satellite imagery and Earth observation (PRIMARY NEED)
 sits
+sitsdata
 rstac
-gdalcubes
-arrow
-
-# Visualization
-tmap
-ggplot2
-plotly
-leaflet
-
-# Data manipulation
-tidyverse
-dplyr
-tidyr
-lubridate
 
 # Machine learning
-randomForest
-caret
 torch
 luz
 
 # Statistical analysis
 FNN
 kohonen
-cluster
+
+# Additional geospatial (if not in base)
+tmap
+gdalcubes
