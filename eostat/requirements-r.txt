@@ -1,0 +1,36 @@
+# Core geospatial packages
+sf
+terra
+stars
+raster
+rgdal
+gdalUtilities
+
+# Satellite imagery and Earth observation
+sits
+rstac
+gdalcubes
+arrow
+
+# Visualization
+tmap
+ggplot2
+plotly
+leaflet
+
+# Data manipulation
+tidyverse
+dplyr
+tidyr
+lubridate
+
+# Machine learning
+randomForest
+caret
+torch
+luz
+
+# Statistical analysis
+FNN
+kohonen
+cluster

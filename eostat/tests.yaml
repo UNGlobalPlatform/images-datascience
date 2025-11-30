@@ -1,0 +1,45 @@
+schemaVersion: "2.0.0"
+metadataTest:
+  user: 1000
+  workdir: "/home/jovyan"
+fileExistenceTests:
+  - name: "user home"
+    path: "/home/jovyan"
+    shouldExist: true
+  - name: "eostat init script"
+    path: "/opt/onyxia-eostat-init.sh"
+    shouldExist: true
+    permissions: "-rwxr-xr-x"
+commandTests:
+  - name: "R binary exists"
+    command: "which"
+    args: ["R"]
+    expectedOutput: ["/usr/local/bin/R"]
+  - name: "Python binary exists"
+    command: "which"
+    args: ["python"]
+    expectedOutput: ['/opt/python/bin/python']
+  - name: "pip binary exists"
+    command: "which"
+    args: ["pip"]
+    expectedOutput: ['/opt/python/bin/pip']
+  - name: "JupyterLab binary exists"
+    command: "which"
+    args: ["jupyter"]
+    expectedOutput: ["/opt/python/bin/jupyter"]
+  - name: "git-lfs installed"
+    command: "git"
+    args: ["lfs", "version"]
+    exitCode: 0
+  - name: "GDAL installed"
+    command: "python"
+    args: ["-c", "from osgeo import gdal; print('GDAL OK')"]
+    expectedOutput: ["GDAL OK"]
+  - name: "sits package installed"
+    command: "Rscript"
+    args: ["-e", "library(sits); cat('sits OK')"]
+    expectedOutput: ["sits OK"]
+  - name: "terra package installed"
+    command: "Rscript"
+    args: ["-e", "library(terra); cat('terra OK')"]
+    expectedOutput: ["terra OK"]
