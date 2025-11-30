@@ -5,7 +5,8 @@
 set -e
 
 CHAPTER_NAME=${CHAPTER_NAME:-""}
-WORK_DIR=${ROOT_PROJECT_DIRECTORY:-"/home/jovyan/work"}
+WORK_DIR=${ROOT_PROJECT_DIRECTORY:-"/home/onyxia/work"}
+HOME_DIR=${HOME:-"/home/onyxia"}
 
 echo "=========================================="
 echo "Converting Chapter to Jupyter Notebook"
@@ -32,34 +33,37 @@ else
 fi
 
 echo "📄 Found chapter: $CHAPTER_FILE"
-echo "📝 Converting to Jupyter notebook..."
+echo "📝 Converting to Jupyter notebook (preserving cells)..."
 
-# Convert to notebook format
-quarto convert "$CHAPTER_FILE" --output "${CHAPTER_NAME}.ipynb"
+# Use quarto render --to ipynb instead of convert to preserve cell structure
+quarto render "$CHAPTER_FILE" --to ipynb --output "${CHAPTER_NAME}.ipynb"
 
 if [ -f "${CHAPTER_NAME}.ipynb" ]; then
   echo "✓ Created: ${CHAPTER_NAME}.ipynb"
 
-  # Create a copy in the parent directory for easy access
-  cp "${CHAPTER_NAME}.ipynb" "../${CHAPTER_NAME}.ipynb" 2>/dev/null || true
+  # Copy to home directory for immediate visibility
+  cp "${CHAPTER_NAME}.ipynb" "${HOME_DIR}/${CHAPTER_NAME}.ipynb"
+  echo "✓ Copied to: ${HOME_DIR}/${CHAPTER_NAME}.ipynb"
 
-  # Create a welcome README
-  cat > ../README.md << EOF
+  # Create a welcome README in home directory
+  cat > "${HOME_DIR}/README.md" << EOF
 # UN Handbook - ${CHAPTER_NAME}
 
 ## Quick Start
 
-### Option 1: Open Converted Notebook
-- Open \`${CHAPTER_NAME}.ipynb\` (ready to run!)
+### Open the Notebook (Recommended)
+- Click \`${CHAPTER_NAME}.ipynb\` in the file browser
+- Ready to run immediately!
 
-### Option 2: Work with Full Repository
-- Navigate to \`UN-Handbook/\` folder
-- Open \`${CHAPTER_NAME}.qmd\` (original source)
+### Access Original Files
+- Navigate to \`work/UN-Handbook/\` folder
+- Original source: \`work/UN-Handbook/${CHAPTER_NAME}.qmd\`
+- Chapter data: \`work/UN-Handbook/data/${CHAPTER_NAME}/\`
 
-## Files
-- \`${CHAPTER_NAME}.ipynb\` - Converted Jupyter notebook (this directory)
-- \`UN-Handbook/${CHAPTER_NAME}.qmd\` - Original Quarto source
-- \`UN-Handbook/data/${CHAPTER_NAME}/\` - Chapter data
+## Files in Your Home Directory (~/)
+- \`${CHAPTER_NAME}.ipynb\` - Converted Jupyter notebook ⭐
+- \`README.md\` - This file
+- \`work/UN-Handbook/\` - Full repository clone
 
 ## Running Code
 All R packages are pre-installed:
@@ -73,10 +77,18 @@ Happy analyzing! 🚀
 EOF
 
   echo "✓ Created README.md with instructions"
+
+  # Create symlink to chapter data in home directory
+  if [ -d "data/${CHAPTER_NAME}" ]; then
+    ln -sf "${WORK_DIR}/UN-Handbook/data/${CHAPTER_NAME}" "${HOME_DIR}/data"
+    echo "✓ Created symlink: ~/data -> chapter data"
+  fi
 else
   echo "⚠️  Conversion failed, notebook not created"
 fi
 
 echo "=========================================="
 echo "Conversion complete!"
+echo "Files in home directory:"
+ls -la "${HOME_DIR}/" | grep -E "README|${CHAPTER_NAME}|data"
 echo "=========================================="
