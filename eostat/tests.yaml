@@ -1,10 +1,10 @@
 schemaVersion: "2.0.0"
 metadataTest:
   user: 1000
-  workdir: "/home/jovyan"
+  workdir: "/home/onyxia/work"
 fileExistenceTests:
-  - name: "user home"
-    path: "/home/jovyan"
+  - name: "user work directory"
+    path: "/home/onyxia/work"
     shouldExist: true
   - name: "eostat init script"
     path: "/opt/onyxia-eostat-init.sh"
