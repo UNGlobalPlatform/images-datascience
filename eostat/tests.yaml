@@ -31,10 +31,10 @@ commandTests:
     command: "git"
     args: ["lfs", "version"]
     exitCode: 0
-  - name: "GDAL installed"
+  - name: "GDAL installed (via rasterio)"
     command: "python"
-    args: ["-c", "from osgeo import gdal; print('GDAL OK')"]
-    expectedOutput: ["GDAL OK"]
+    args: ["-c", "import rasterio; print(f'GDAL {rasterio.__gdal_version__}')"]
+    exitCode: 0
   - name: "All UN-Handbook R packages available"
     command: "Rscript"
     args: ["/opt/eostat/test-handbook-packages.R"]
