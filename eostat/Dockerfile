@@ -33,6 +33,9 @@ RUN Rscript /opt/eostat/install-r-packages.R && \
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
     rm /tmp/requirements.txt
 
+# Ensure R kernel is available in JupyterLab
+RUN R -e "if (!require('IRkernel', quietly = TRUE)) install.packages('IRkernel'); IRkernel::installspec(user = FALSE)"
+
 # Set up init script for eostat sessions
 COPY --chmod=0755 onyxia-eostat-init.sh /opt/
 ENV EOSTAT_INIT_SCRIPT=/opt/onyxia-eostat-init.sh
