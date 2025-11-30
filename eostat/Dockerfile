@@ -45,6 +45,7 @@ RUN /opt/fix-user-permissions.sh
 
 USER 1000
 
-WORKDIR /home/jovyan
+# Start in work directory where git clones UN-Handbook
+WORKDIR /home/onyxia/work
 
 CMD ["/bin/bash"]

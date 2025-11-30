@@ -35,8 +35,8 @@ fi
 echo "📄 Found chapter: $CHAPTER_FILE"
 echo "📝 Converting to Jupyter notebook (preserving cells)..."
 
-# Use quarto render --to ipynb instead of convert to preserve cell structure
-quarto render "$CHAPTER_FILE" --to ipynb --output "${CHAPTER_NAME}.ipynb"
+# Use quarto convert (works outside book context, preserves cell structure)
+quarto convert "$CHAPTER_FILE"
 
 if [ -f "${CHAPTER_NAME}.ipynb" ]; then
   echo "✓ Created: ${CHAPTER_NAME}.ipynb"
