@@ -41,29 +41,30 @@ quarto convert "$CHAPTER_FILE"
 if [ -f "${CHAPTER_NAME}.ipynb" ]; then
   echo "✓ Created: ${CHAPTER_NAME}.ipynb"
 
-  # Copy to home directory for immediate visibility
-  cp "${CHAPTER_NAME}.ipynb" "${HOME_DIR}/${CHAPTER_NAME}.ipynb"
-  echo "✓ Copied to: ${HOME_DIR}/${CHAPTER_NAME}.ipynb"
+  # Copy to work directory (PERSISTENT!) for immediate visibility
+  cp "${CHAPTER_NAME}.ipynb" "${WORK_DIR}/${CHAPTER_NAME}.ipynb"
+  echo "✓ Copied to: ${WORK_DIR}/${CHAPTER_NAME}.ipynb"
 
-  # Create a welcome README in home directory
-  cat > "${HOME_DIR}/README.md" << EOF
+  # Create a welcome README in work directory (PERSISTENT!)
+  cat > "${WORK_DIR}/README.md" << EOF
 # UN Handbook - ${CHAPTER_NAME}
 
 ## Quick Start
 
 ### Open the Notebook (Recommended)
-- Click \`${CHAPTER_NAME}.ipynb\` in the file browser
-- Ready to run immediately!
+- You're in the work directory (~/work/)
+- Click \`${CHAPTER_NAME}.ipynb\` - Ready to run immediately! ⭐
 
 ### Access Original Files
-- Navigate to \`work/UN-Handbook/\` folder
-- Original source: \`work/UN-Handbook/${CHAPTER_NAME}.qmd\`
-- Chapter data: \`work/UN-Handbook/data/${CHAPTER_NAME}/\`
+- \`UN-Handbook/${CHAPTER_NAME}.qmd\` - Original source
+- \`data/\` - Symlink to chapter data
+- \`UN-Handbook/\` - Full repository
 
-## Files in Your Home Directory (~/)
+## Files in Your Work Directory (~/work/) - PERSISTENT
 - \`${CHAPTER_NAME}.ipynb\` - Converted Jupyter notebook ⭐
 - \`README.md\` - This file
-- \`work/UN-Handbook/\` - Full repository clone
+- \`data/\` - Chapter data symlink
+- \`UN-Handbook/\` - Full repository clone
 
 ## Running Code
 All R packages are pre-installed:
@@ -78,10 +79,10 @@ EOF
 
   echo "✓ Created README.md with instructions"
 
-  # Create symlink to chapter data in home directory
+  # Create symlink to chapter data in work directory (PERSISTENT!)
   if [ -d "data/${CHAPTER_NAME}" ]; then
-    ln -sf "${WORK_DIR}/UN-Handbook/data/${CHAPTER_NAME}" "${HOME_DIR}/data"
-    echo "✓ Created symlink: ~/data -> chapter data"
+    ln -sf "${WORK_DIR}/UN-Handbook/data/${CHAPTER_NAME}" "${WORK_DIR}/data"
+    echo "✓ Created symlink: ~/work/data -> chapter data"
   fi
 else
   echo "⚠️  Conversion failed, notebook not created"
@@ -89,6 +90,6 @@ fi
 
 echo "=========================================="
 echo "Conversion complete!"
-echo "Files in home directory:"
-ls -la "${HOME_DIR}/" | grep -E "README|${CHAPTER_NAME}|data"
+echo "Files in work directory (PERSISTENT):"
+ls -la "${WORK_DIR}/" | grep -E "README|${CHAPTER_NAME}|data|UN-Handbook"
 echo "=========================================="
