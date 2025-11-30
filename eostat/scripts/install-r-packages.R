@@ -40,4 +40,21 @@ for (pkg in packages) {
   })
 }
 
-cat("✓ R package installation complete\n")
+# Install GitHub-only packages
+cat("\nInstalling GitHub-only packages...\n")
+
+# Install remotes if not available
+if (!require("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+
+# sitsdata - example datasets for sits package
+tryCatch({
+  cat("Installing sitsdata from GitHub...\n")
+  remotes::install_github("e-sensing/sitsdata", quiet = FALSE, upgrade = "never")
+  cat("✓ sitsdata installed successfully\n")
+}, error = function(e) {
+  cat(sprintf("✗ Failed to install sitsdata: %s\n", e$message))
+})
+
+cat("\n✓ R package installation complete\n")

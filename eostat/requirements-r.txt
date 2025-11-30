@@ -5,8 +5,9 @@
 
 # Satellite imagery and Earth observation (PRIMARY NEED)
 sits
-sitsdata
 rstac
+earthdatalogin
+# sitsdata installed from GitHub in install script
 
 # Machine learning
 torch
@@ -19,3 +20,8 @@ kohonen
 # Additional geospatial (if not in base)
 tmap
 gdalcubes
+
+# Utilities
+kableExtra
+reticulate
+# Note: knitr, xml2, downlit, reshape2 already in base or installed as dependencies
