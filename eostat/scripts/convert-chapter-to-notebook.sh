@@ -1,70 +1,62 @@
 #!/bin/bash
-# Convert specified UN Handbook chapter to Jupyter notebook
+# Set up UN Handbook chapter environment
 # Runs after git clone via init.personalInit
 
 set -e
 
 CHAPTER_NAME=${CHAPTER_NAME:-""}
 WORK_DIR=${ROOT_PROJECT_DIRECTORY:-"/home/onyxia/work"}
-HOME_DIR=${HOME:-"/home/onyxia"}
 
 echo "=========================================="
-echo "Converting Chapter to Jupyter Notebook"
+echo "Setting Up UN Handbook Chapter Environment"
 echo "=========================================="
 
 if [ -z "$CHAPTER_NAME" ]; then
-  echo "⚠️  No CHAPTER_NAME specified, skipping conversion"
+  echo "⚠️  No CHAPTER_NAME specified, skipping setup"
   exit 0
 fi
 
 cd "$WORK_DIR"
 
-# Check if we're in the UN-Handbook repo or if it's in a subdirectory
-if [ -f "${CHAPTER_NAME}.qmd" ]; then
-  CHAPTER_FILE="${CHAPTER_NAME}.qmd"
-elif [ -f "UN-Handbook/${CHAPTER_NAME}.qmd" ]; then
-  cd UN-Handbook
-  CHAPTER_FILE="${CHAPTER_NAME}.qmd"
-else
-  echo "⚠️  Chapter file not found: ${CHAPTER_NAME}.qmd"
-  echo "Available .qmd files:"
-  find . -name "*.qmd" -type f | head -10
+# Check if UN-Handbook exists
+if [ ! -d "UN-Handbook" ]; then
+  echo "⚠️  UN-Handbook directory not found"
   exit 0
 fi
 
-echo "📄 Found chapter: $CHAPTER_FILE"
-echo "📝 Converting to Jupyter notebook (preserving cells)..."
+# Check if chapter file exists
+if [ ! -f "UN-Handbook/${CHAPTER_NAME}.qmd" ]; then
+  echo "⚠️  Chapter file not found: UN-Handbook/${CHAPTER_NAME}.qmd"
+  echo "Available .qmd files:"
+  find UN-Handbook -name "*.qmd" -type f | head -10
+  exit 0
+fi
 
-# Use quarto convert (works outside book context, preserves cell structure)
-quarto convert "$CHAPTER_FILE"
+echo "📄 Found chapter: UN-Handbook/${CHAPTER_NAME}.qmd"
 
-if [ -f "${CHAPTER_NAME}.ipynb" ]; then
-  echo "✓ Created: ${CHAPTER_NAME}.ipynb"
-
-  # Copy to work directory (PERSISTENT!) for immediate visibility
-  cp "${CHAPTER_NAME}.ipynb" "${WORK_DIR}/${CHAPTER_NAME}.ipynb"
-  echo "✓ Copied to: ${WORK_DIR}/${CHAPTER_NAME}.ipynb"
-
-  # Create a welcome README in work directory (PERSISTENT!)
-  cat > "${WORK_DIR}/README.md" << EOF
+# Create a welcome README in work directory (PERSISTENT!)
+cat > "${WORK_DIR}/README.md" << EOF
 # UN Handbook - ${CHAPTER_NAME}
 
 ## Quick Start
 
-### Open the Notebook (Recommended)
-- You're in the work directory (~/work/)
-- Click \`${CHAPTER_NAME}.ipynb\` - Ready to run immediately! ⭐
+### Open the Chapter (Recommended) ⭐
+1. Navigate to: \`UN-Handbook/${CHAPTER_NAME}.qmd\`
+2. Double-click to open in JupyterLab
+3. The Quarto extension provides native .qmd editing with:
+   - Syntax highlighting
+   - Cell-by-cell execution
+   - Visual editor mode
 
-### Access Original Files
-- \`UN-Handbook/${CHAPTER_NAME}.qmd\` - Original source
+### Alternative: Access Data Directly
 - \`data/\` - Symlink to chapter data
 - \`UN-Handbook/\` - Full repository
 
 ## Files in Your Work Directory (~/work/) - PERSISTENT
-- \`${CHAPTER_NAME}.ipynb\` - Converted Jupyter notebook ⭐
 - \`README.md\` - This file
 - \`data/\` - Chapter data symlink
 - \`UN-Handbook/\` - Full repository clone
+  - \`${CHAPTER_NAME}.qmd\` - Your chapter (open this!) ⭐
 
 ## Running Code
 All R packages are pre-installed:
@@ -74,22 +66,30 @@ library(terra)
 library(sf)
 \`\`\`
 
+## Tips
+- Work directly with .qmd files (no conversion needed!)
+- Use Ctrl+Enter or Cmd+Enter to run cells
+- Changes are saved automatically
+- Your work directory (~/work/) is persistent across sessions
+
 Happy analyzing! 🚀
 EOF
 
-  echo "✓ Created README.md with instructions"
+echo "✓ Created README.md with instructions"
 
-  # Create symlink to chapter data in work directory (PERSISTENT!)
-  if [ -d "data/${CHAPTER_NAME}" ]; then
-    ln -sf "${WORK_DIR}/UN-Handbook/data/${CHAPTER_NAME}" "${WORK_DIR}/data"
-    echo "✓ Created symlink: ~/work/data -> chapter data"
-  fi
+# Create symlink to chapter data in work directory (PERSISTENT!)
+if [ -d "UN-Handbook/data/${CHAPTER_NAME}" ]; then
+  ln -sf "${WORK_DIR}/UN-Handbook/data/${CHAPTER_NAME}" "${WORK_DIR}/data"
+  echo "✓ Created symlink: ~/work/data -> chapter data"
 else
-  echo "⚠️  Conversion failed, notebook not created"
+  echo "⚠️  Chapter data directory not found: UN-Handbook/data/${CHAPTER_NAME}"
 fi
 
 echo "=========================================="
-echo "Conversion complete!"
+echo "Setup complete!"
 echo "Files in work directory (PERSISTENT):"
-ls -la "${WORK_DIR}/" | grep -E "README|${CHAPTER_NAME}|data|UN-Handbook"
+ls -la "${WORK_DIR}/" | grep -E "README|data|UN-Handbook" || echo "No matching files found"
 echo "=========================================="
+echo ""
+echo "📖 To get started: Open UN-Handbook/${CHAPTER_NAME}.qmd in JupyterLab"
+echo ""

@@ -1,6 +1,9 @@
 # NOTE: numpy, pandas, requests, s3fs, pyarrow, duckdb already in base image
 # NOTE: Python is barely used in UN-Handbook (mostly R)
 
+# Quarto JupyterLab extension - Native .qmd editing in JupyterLab
+jupyterlab-quarto>=0.3.0
+
 # Geospatial packages (for the few Python examples)
 geopandas>=0.13.0
 rasterio>=1.3.0
