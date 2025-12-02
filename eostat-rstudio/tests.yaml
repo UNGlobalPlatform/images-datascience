@@ -1,0 +1,35 @@
+schemaVersion: "2.0.0"
+metadataTest:
+  workdir: "/home/onyxia/work"
+fileExistenceTests:
+  - name: "user work directory"
+    path: "/home/onyxia/work"
+    shouldExist: true
+  - name: "eostat init script"
+    path: "/opt/onyxia-eostat-init.sh"
+    shouldExist: true
+    permissions: "-rwxr-xr-x"
+  - name: "RStudio Server binary"
+    path: "/usr/lib/rstudio-server/bin/rserver"
+    shouldExist: true
+commandTests:
+  - name: "R binary exists"
+    command: "which"
+    args: ["R"]
+    expectedOutput: ["/usr/local/bin/R"]
+  - name: "RStudio Server exists"
+    command: "which"
+    args: ["rserver"]
+    exitCode: 0
+  - name: "git-lfs installed"
+    command: "git"
+    args: ["lfs", "version"]
+    exitCode: 0
+  - name: "GDAL installed (via terra)"
+    command: "R"
+    args: ["-q", "-e", "library(terra); cat('GDAL', terra::gdal())"]
+    exitCode: 0
+  - name: "All UN-Handbook R packages available"
+    command: "Rscript"
+    args: ["/opt/eostat/test-handbook-packages.R"]
+    exitCode: 0

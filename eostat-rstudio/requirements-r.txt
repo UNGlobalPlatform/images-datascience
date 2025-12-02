@@ -1,0 +1,27 @@
+# NOTE: Base image (r-datascience) already includes:
+# - sf, terra, stars (from rocker's install_geospatial.sh)
+# - tidyverse, dplyr, tidyr, ggplot2, lubridate
+# - arrow, duckdb
+
+# Satellite imagery and Earth observation (PRIMARY NEED)
+sits
+rstac
+earthdatalogin
+# sitsdata installed from GitHub in install script
+
+# Machine learning
+torch
+luz
+
+# Statistical analysis
+FNN
+kohonen
+
+# Additional geospatial (if not in base)
+tmap
+gdalcubes
+
+# Utilities
+kableExtra
+reticulate
+# Note: knitr, xml2, downlit, reshape2 already in base or installed as dependencies
