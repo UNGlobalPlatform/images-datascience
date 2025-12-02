@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=inseefrlab/onyxia-rstudio-r
+ARG BASE_IMAGE=inseefrlab/onyxia-rstudio:r4.5.1
 FROM $BASE_IMAGE
 
 LABEL maintainer="UN Global Platform <lovells@un.org>"
