@@ -1,4 +1,4 @@
-name: Build and Push EOStat Image
+name: Build and Push EOStat JupyterLab Image
 
 on:
   workflow_dispatch:
@@ -6,8 +6,8 @@ on:
     branches:
       - main
     paths:
-      - 'eostat/**'
-      - '.github/workflows/build-eostat.yml'
+      - 'eostat-jupyter/**'
+      - '.github/workflows/build-eostat-jupyter.yml'
 
 # Required for AWS OIDC
 permissions:
@@ -41,7 +41,7 @@ jobs:
         id: meta
         run: |
           ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY=onyxia-eostat
+          ECR_REPOSITORY=eostat-jupyter
 
           # Generate unique immutable tag: version-date-commit
           DATE_TAG=$(date +%Y%m%d)
@@ -59,10 +59,10 @@ jobs:
       - name: Build and load image for testing
         uses: docker/build-push-action@v5
         with:
-          context: ./eostat
-          file: ./eostat/Dockerfile
+          context: ./eostat-jupyter
+          file: ./eostat-jupyter/Dockerfile
           load: true
-          tags: eostat-test:latest
+          tags: eostat-jupyter-test:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -74,14 +74,14 @@ jobs:
           sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test
 
           # Run tests
-          container-structure-test test --image eostat-test:latest --config ./eostat/tests.yaml
+          container-structure-test test --image eostat-jupyter-test:latest --config ./eostat-jupyter/tests.yaml
 
       - name: Build and push to ECR
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
-          context: ./eostat
-          file: ./eostat/Dockerfile
+          context: ./eostat-jupyter
+          file: ./eostat-jupyter/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tag-unique }}
           cache-from: type=gha
@@ -95,5 +95,4 @@ jobs:
           echo ""
           echo "Version tag for Helm chart: ${{ steps.meta.outputs.version-tag }}"
           echo ""
-          echo "⚠️  Note: ECR has fully immutable tags - 'latest' tag NOT pushed"
           echo "Update Helm chart values.yaml with this specific tag"
