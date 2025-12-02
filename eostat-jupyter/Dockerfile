@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     libgeos-dev \
     libproj-dev \
     libsqlite3-dev \
+    libmagick++-dev \
     && git lfs install \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
