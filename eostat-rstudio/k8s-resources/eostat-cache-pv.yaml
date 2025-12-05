@@ -1,0 +1,22 @@
+# PersistentVolume for EOStat R packages cache (S3-backed)
+# This is cluster-scoped and shared across all namespaces
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: eostat-handbook-cache-pv
+spec:
+  capacity:
+    storage: 10Gi  # Nominal, S3 doesn't enforce this
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""  # Empty for static provisioning
+  csi:
+    driver: s3.csi.aws.com
+    volumeHandle: eostat-handbook-cache-pv  # Must be unique
+    volumeAttributes:
+      bucketName: ungp-eostat-handbook-cache
+  mountOptions:
+    - read-only
+    - allow-other
+    - region us-west-2

@@ -1,0 +1,15 @@
+# PersistentVolumeClaim template for EOStat cache
+# Create one of these per user namespace, or use Helm to create dynamically
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: eostat-handbook-cache-pvc
+  # namespace: <user-namespace>  # Set per-deployment
+spec:
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: ""  # Must be empty to bind to static PV
+  resources:
+    requests:
+      storage: 10Gi  # Must match PV
+  volumeName: eostat-handbook-cache-pv  # Bind to specific PV

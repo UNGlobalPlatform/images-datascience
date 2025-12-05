@@ -1,0 +1,69 @@
+# One-time Job to extract R packages from the eostat-rstudio image to S3
+# Run this after a new image is built to populate the S3 cache
+#
+# Usage:
+#   kubectl apply -f extract-packages-job.yaml
+#   kubectl logs -f job/extract-eostat-packages
+#   kubectl delete job extract-eostat-packages
+#
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: extract-eostat-packages
+  namespace: kuik-system  # Or any namespace with S3 write access
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      serviceAccountName: eostat-cache-populator  # Temporary SA with S3 write access
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 0  # Run as root to access /root/.local/share/torch
+      containers:
+      - name: extractor
+        image: 142496269814.dkr.ecr.us-west-2.amazonaws.com/eostat-rstudio:0.1.0-20251205-32767a2b
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "=== Extracting R packages to S3 ==="
+
+          # Install AWS CLI v2 if not present
+          if ! command -v aws &> /dev/null; then
+            echo "Installing AWS CLI v2..."
+            apt-get update && apt-get install -y curl unzip
+            curl -sL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+            unzip -q /tmp/awscliv2.zip -d /tmp
+            /tmp/aws/install
+            rm -rf /tmp/awscliv2.zip /tmp/aws
+          fi
+
+          BUCKET="ungp-eostat-handbook-cache"
+
+          # Extract sitsdata
+          echo "Uploading sitsdata..."
+          if [ -d "/usr/local/lib/R/site-library/sitsdata" ]; then
+            aws s3 sync /usr/local/lib/R/site-library/sitsdata s3://${BUCKET}/r-packages/sitsdata/ --delete
+            echo "✓ sitsdata uploaded"
+          else
+            echo "✗ sitsdata not found in image"
+          fi
+
+          # Note: torch backend is bundled with the torch R package
+          # No separate extraction needed
+
+          # List what was uploaded
+          echo ""
+          echo "=== S3 Contents ==="
+          aws s3 ls s3://${BUCKET}/r-packages/ --recursive --human-readable | head -20
+
+          echo ""
+          echo "=== Done ==="
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
