@@ -7,6 +7,31 @@ echo "=========================================="
 
 export RENV_CONFIG_AUTOLOADER_ENABLED=FALSE
 
+# S3-cached R packages optimization
+# Mount point configured via Helm: /mnt/eostat-cache
+EOSTAT_CACHE_MOUNT=${EOSTAT_CACHE_MOUNT:-"/mnt/eostat-cache"}
+R_CACHE_DIR="${EOSTAT_CACHE_MOUNT}/r-packages"
+
+if [ -d "$R_CACHE_DIR" ] && [ -d "$R_CACHE_DIR/sitsdata" ]; then
+  echo "Using S3-cached R packages from $R_CACHE_DIR"
+
+  # Add S3 cache to R library path (checked first)
+  export R_LIBS_SITE="${R_CACHE_DIR}:${R_LIBS_SITE:-/usr/local/lib/R/site-library}"
+
+  # Persist for RStudio sessions
+  echo "R_LIBS_SITE=${R_LIBS_SITE}" >> /usr/local/lib/R/etc/Renviron.site 2>/dev/null || true
+
+  # Symlink torch backend if available
+  TORCH_CACHE="${EOSTAT_CACHE_MOUNT}/r-packages/torch-backend"
+  if [ -d "$TORCH_CACHE" ] && [ ! -d "${HOME}/.local/share/torch" ]; then
+    mkdir -p "${HOME}/.local/share"
+    ln -sf "$TORCH_CACHE" "${HOME}/.local/share/torch"
+    echo "Linked torch backend from S3 cache"
+  fi
+else
+  echo "S3 cache not available, using packages from Docker image"
+fi
+
 # Environment variables (set by Helm chart)
 REPO_URL=${REPO_URL:-"https://github.com/FAO-EOSTAT/UN-Handbook.git"}
 REPO_BRANCH=${REPO_BRANCH:-"main"}

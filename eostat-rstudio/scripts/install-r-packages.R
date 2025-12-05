@@ -40,6 +40,19 @@ for (pkg in packages) {
   })
 }
 
+# Install torch backend (LibTorch C++ library)
+cat("\nInstalling torch backend...\n")
+tryCatch({
+  if (require("torch", quietly = TRUE)) {
+    torch::install_torch()
+    cat("✓ torch backend installed successfully\n")
+  } else {
+    cat("⚠ torch package not available, skipping backend installation\n")
+  }
+}, error = function(e) {
+  cat(sprintf("✗ Failed to install torch backend: %s\n", e$message))
+})
+
 # Install GitHub-only packages
 cat("\nInstalling GitHub-only packages...\n")
 
@@ -48,9 +61,10 @@ if (!require("remotes", quietly = TRUE)) {
   install.packages("remotes")
 }
 
-# sitsdata - example datasets for sits package
+# sitsdata - example datasets for sits package (large download, needs extended timeout)
 tryCatch({
   cat("Installing sitsdata from GitHub...\n")
+  options(timeout = 1200)  # 20 minutes for large data package
   remotes::install_github("e-sensing/sitsdata", quiet = FALSE, upgrade = "never")
   cat("✓ sitsdata installed successfully\n")
 }, error = function(e) {
