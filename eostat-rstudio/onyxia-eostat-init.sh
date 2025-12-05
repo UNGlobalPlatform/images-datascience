@@ -5,6 +5,8 @@ echo "=========================================="
 echo "Earth Observation Statistics Session Init"
 echo "=========================================="
 
+export RENV_CONFIG_AUTOLOADER_ENABLED=FALSE
+
 # Environment variables (set by Helm chart)
 REPO_URL=${REPO_URL:-"https://github.com/FAO-EOSTAT/UN-Handbook.git"}
 REPO_BRANCH=${REPO_BRANCH:-"main"}
@@ -19,6 +21,12 @@ if [ -d "work" ]; then
 else
   git clone --depth 1 --branch $REPO_BRANCH $REPO_URL work
   cd work
+
+    # This prevents .Rprofile from activating renv
+  if [ -f ".Rprofile" ]; then
+    echo "Disabling renv auto-activation..."
+    mv .Rprofile .Rprofile.disabled
+  fi
 
   # Create convenience symlinks
   if [ -d "data/$CHAPTER_NAME" ]; then

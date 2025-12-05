@@ -4,6 +4,8 @@ FROM $BASE_IMAGE
 LABEL maintainer="UN Global Platform <lovells@un.org>"
 LABEL description="RStudio environment for Earth Observation Statistics (R, geospatial stack)"
 
+ENV RENV_CONFIG_AUTOLOADER_ENABLED=FALSE
+
 USER root
 
 # Install additional system dependencies for geospatial packages
